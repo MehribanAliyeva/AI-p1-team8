@@ -1,8 +1,8 @@
 import heapq
 import math
 import sys
-import tracemalloc
 import time
+import tracemalloc
 
 
 # Estimates the straight-line distance between two squares on the grid.
@@ -208,20 +208,25 @@ if __name__ == "__main__":
             tracemalloc.start()
             t0 = time.perf_counter()
             astar_result = run_search(graph, start_node, end_node, "astar")
+            t1 = time.perf_counter()
+            astar_mem = tracemalloc.get_traced_memory()[1]  # peak
+            tracemalloc.stop()
+            astar_result['time_ms'] = (t1 - t0) * 1000
+            astar_result['peak_memory_kb'] = astar_mem / 1024
 
-            print(f"{'Algorithm':<15} | {'Cost':<10} | {'Nodes Expanded':<15} | {'Path Found'}")
+            header = f"{'Algorithm':<15} | {'Cost':<10} | {'Nodes Expanded':<15} | {'Time (ms)':<12} | {'Peak Mem (KB)':<14} | {'Path Found'}"
+            print(header)
+            print('-' * len(header))
+
+            for label, result in [("Dijkstra", dijkstra_result), ("A* (Star)", astar_result)]:
+                if result['found']:
+                    print(f"{label:<15} | {result['distance']:<10.2f} | {result['nodes_expanded']:<15} | "
+                          f"{result['time_ms']:<12.4f} | {result['peak_memory_kb']:<14.2f} | Yes")
+                else:
+                    print(f"{label:<15} | {'N/A':<10} | {result['nodes_expanded']:<15} | "
+                          f"{result['time_ms']:<12.4f} | {result['peak_memory_kb']:<14.2f} | No")
 
             if dijkstra_result['found']:
-                print(
-                    f"{'Dijkstra':<15} | {dijkstra_result['distance']:<10.2f} | {dijkstra_result['nodes_expanded']:<15} | Yes")
-            else:
-                print(f"{'Dijkstra':<15} | {'N/A':<10} | {dijkstra_result['nodes_expanded']:<15} | No")
-
+                print(f"\nPath (Dijkstra): {dijkstra_result['path']}")
             if astar_result['found']:
-                print(
-                    f"{'A* (Star)':<15} | {astar_result['distance']:<10.2f} | {astar_result['nodes_expanded']:<15} | Yes")
-            else:
-                print(f"{'A* (Star)':<15} | {'N/A':<10} | {astar_result['nodes_expanded']:<15} | No")
-
-            if dijkstra_result['found']:
-                print(f"Path (Dijkstra): {dijkstra_result['path']}")
+                print(f"Path (A*):       {astar_result['path']}")
