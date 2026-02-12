@@ -105,7 +105,7 @@ def run_search(graph, start_node, end_node, algorithm="dijkstra"):
                     heapq.heappush(pq, (priority, neighbor))
 
     # If we exhaust the queue without reaching the goal, no path exists
-    return {"Found": False, "Nodes_expanded": nodes_expanded}
+    return {"found": False, "nodes_expanded": nodes_expanded}
 
 
 # Reads a graph definition from a text file. The format supports:
